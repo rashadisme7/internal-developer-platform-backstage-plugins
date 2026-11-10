@@ -1,5 +1,40 @@
 # @openchoreo/backstage-portal-app
 
+## 1.6.0-m.2-eval
+
+### Minor Changes
+
+- 858ed02: Publish `@openchoreo/backstage-portal-app`. The shell is fully on the new
+  frontend system and no longer depends on the private Portal Assistant, so it
+  now releases in lockstep with the other `@openchoreo/*` packages (it joins the
+  changeset linked group). The unused `@backstage/core-compat-api` dependency is
+  dropped.
+- 191f8f9: Add a Scorecards sidebar item, shown when the portal includes the Tech
+  Insights scorecards plugin and `techInsights.scorecards.enabled` isn't false.
+
+### Patch Changes
+
+- 48791fb: Render the Support button in the Catalog, APIs and Create page headers, so
+  `app.support` in `app-config` actually reaches users.
+
+  The portal replaces Backstage's own catalog, API explorer and template list
+  pages, and those replacements dropped the Support button that upstream puts in
+  each page header. Setting `app.support` therefore had no visible effect
+  anywhere except the Register-component page. The button still renders only when
+  `app.support` is configured, so portals that leave it unset are unchanged.
+
+- Updated dependencies [9e4993f]
+- Updated dependencies [6ac94f5]
+- Updated dependencies [72a8302]
+- Updated dependencies [3f66cba]
+  - @openchoreo/backstage-plugin@2.0.0-next.3
+  - @openchoreo/backstage-plugin-openchoreo-observability@2.0.0-next.3
+  - @openchoreo/backstage-plugin-openchoreo-ci@2.0.0-next.3
+  - @openchoreo/backstage-plugin-openchoreo-workflows@2.0.0-next.3
+  - @openchoreo/backstage-plugin-platform-engineer-core@2.0.0-next.3
+  - @openchoreo/backstage-plugin-common@2.0.0-next.3
+  - @openchoreo/backstage-plugin-react@2.0.0-next.3
+
 ## 1.4.0-next.2
 
 ### Patch Changes

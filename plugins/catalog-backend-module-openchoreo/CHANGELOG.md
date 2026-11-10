@@ -1,5 +1,23 @@
 # @openchoreo/backstage-plugin-catalog-backend-module
 
+## 1.6.0-m.2-eval
+
+### Minor Changes
+
+- 6ac94f5: Email notification channels can set a sender display name. The create form adds an optional
+  "Sender Name" field (`emailConfig.fromName`), the scaffolder action forwards it to the OpenChoreo
+  API, and the channel overview card shows the sender as `Name <address>`. The client is regenerated
+  for the new `NotificationEmailConfig.fromName` field.
+
+### Patch Changes
+
+- Updated dependencies [11f6b1d]
+- Updated dependencies [6ac94f5]
+- Updated dependencies [4808a76]
+  - @openchoreo/backstage-plugin-permission-backend-module-openchoreo-policy@2.0.0-next.3
+  - @openchoreo/openchoreo-client-node@2.0.0-next.3
+  - @openchoreo/backstage-plugin-common@2.0.0-next.3
+
 ## 2.0.0-next.2
 
 ### Minor Changes

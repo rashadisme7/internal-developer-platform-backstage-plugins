@@ -1,5 +1,15 @@
 # @openchoreo/backstage-plugin-platform-engineer-core
 
+## 1.6.0-m.2-eval
+
+### Patch Changes
+
+- Updated dependencies [9e4993f]
+- Updated dependencies [6ac94f5]
+  - @openchoreo/backstage-plugin@2.0.0-next.3
+  - @openchoreo/backstage-plugin-common@2.0.0-next.3
+  - @openchoreo/backstage-plugin-react@2.0.0-next.3
+
 ## 2.0.0-next.2
 
 ### Patch Changes

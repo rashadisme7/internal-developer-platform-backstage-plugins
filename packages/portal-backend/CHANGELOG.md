@@ -1,5 +1,22 @@
 # @openchoreo/backstage-portal-backend
 
+## 1.6.0-m.2-eval
+
+### Patch Changes
+
+- Updated dependencies [11f6b1d]
+- Updated dependencies [6ac94f5]
+- Updated dependencies [4808a76]
+- Updated dependencies [72a8302]
+  - @openchoreo/backstage-plugin-permission-backend-module-openchoreo-policy@2.0.0-next.3
+  - @openchoreo/backstage-plugin-catalog-backend-module@2.0.0-next.3
+  - @openchoreo/backstage-plugin-scaffolder-backend-module@2.0.0-next.3
+  - @openchoreo/backstage-plugin-backend@2.0.0-next.3
+  - @openchoreo/backstage-plugin-openchoreo-ci-backend@2.0.0-next.3
+  - @openchoreo/backstage-plugin-openchoreo-observability-backend@2.0.0-next.3
+  - @openchoreo/backstage-plugin-openchoreo-workflows-backend@2.0.0-next.3
+  - @openchoreo/backstage-plugin-platform-engineer-core-backend@2.0.0-next.3
+
 ## 2.0.0-next.2
 
 ### Patch Changes

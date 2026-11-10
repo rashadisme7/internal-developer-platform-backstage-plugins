@@ -1,5 +1,13 @@
 # @openchoreo/backstage-plugin-openchoreo-ci-backend
 
+## 1.6.0-m.2-eval
+
+### Patch Changes
+
+- Updated dependencies [6ac94f5]
+  - @openchoreo/openchoreo-client-node@2.0.0-next.3
+  - @openchoreo/backstage-plugin-common@2.0.0-next.3
+
 ## 2.0.0-next.2
 
 ### Patch Changes

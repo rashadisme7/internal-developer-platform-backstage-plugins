@@ -1,5 +1,19 @@
 # @openchoreo/backstage-plugin-openchoreo-ci
 
+## 1.6.0-m.2-eval
+
+### Patch Changes
+
+- 3f66cba: Stop the build configuration editor from adding empty schema-default fields
+  (such as `repository.secretRef` and `repository.revision.commit`) as new
+  changes when they were never set. Only fields the user actually changed are
+  shown in the confirmation dialog and saved (openchoreo/openchoreo#5344).
+- Updated dependencies [9e4993f]
+- Updated dependencies [6ac94f5]
+  - @openchoreo/backstage-plugin@2.0.0-next.3
+  - @openchoreo/backstage-plugin-common@2.0.0-next.3
+  - @openchoreo/backstage-plugin-react@2.0.0-next.3
+
 ## 2.0.0-next.2
 
 ### Patch Changes
