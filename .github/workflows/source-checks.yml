@@ -89,9 +89,10 @@ jobs:
           LINE="${BRANCH#release-v}"
           UPSTREAM_BRANCH="release-v${LINE}"
 
-          # --slurp wraps every page into one array before --jq runs once over all of them;
-          # --paginate alone would run --jq once per page, breaking sort_by|last past 30 releases.
-          LATEST_TAG=$(gh api "repos/${UPSTREAM_REPO}/releases" --paginate --slurp --jq \
+          # --slurp wraps every page into one array so the sort_by|last below runs once
+          # over everything, not once per page (which would break past 30 releases).
+          # gh rejects --slurp combined with --jq, so the filtering runs as a separate pipe.
+          LATEST_TAG=$(gh api "repos/${UPSTREAM_REPO}/releases" --paginate --slurp | jq -r \
             "[.[][] | select(.draft==false and .target_commitish==\"${UPSTREAM_BRANCH}\")] | sort_by(.created_at) | last | .tag_name // empty")
 
           if [ -z "$LATEST_TAG" ]; then
