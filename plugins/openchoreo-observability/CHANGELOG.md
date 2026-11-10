@@ -1,5 +1,19 @@
 # @openchoreo/backstage-plugin-openchoreo-observability
 
+## 1.4.0-next.0
+
+### Minor Changes
+
+- 14f0837: Add a project-level metrics view with an HTTP metrics section, per-series
+  color resolution, and supporting hooks.
+
+### Patch Changes
+
+- 92134d1: Describe `actor.id` in the audit log filter and event drawer as the identity
+  claim set per actor type, rather than as the token's `sub` claim. Which claim
+  is recorded now depends on the actor's auth mechanism, so a service account
+  shows a client id where a person shows a username.
+
 ## 1.3.0
 
 ### Minor Changes
