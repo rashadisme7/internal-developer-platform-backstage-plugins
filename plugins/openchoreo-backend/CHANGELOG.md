@@ -1,5 +1,21 @@
 # @openchoreo/backstage-plugin-backend
 
+## 1.6.0-m.2
+
+### Minor Changes
+
+- 72a8302: Wirelogs get a Release line filter of All lines, `main` or one line, shown for a component with release lines. A component's wirelogs stream its main line by default, and on a release line's page they are scoped to the line. In the All lines view, each of the component's pods is badged with its line, and the flow details show the release line of a line pod. The OpenChoreo API answers `501 Not Implemented` for one line when the data plane's cluster agent can't filter by line.
+
+### Patch Changes
+
+- Updated dependencies [11f6b1d]
+- Updated dependencies [6ac94f5]
+- Updated dependencies [4808a76]
+  - @openchoreo/backstage-plugin-permission-backend-module-openchoreo-policy@2.0.0-next.3
+  - @openchoreo/backstage-plugin-catalog-backend-module@2.0.0-next.3
+  - @openchoreo/openchoreo-client-node@2.0.0-next.3
+  - @openchoreo/backstage-plugin-common@2.0.0-next.3
+
 ## 2.0.0-next.2
 
 ### Patch Changes
