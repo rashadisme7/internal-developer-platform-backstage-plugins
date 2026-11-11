@@ -39,6 +39,7 @@
     "audit-actor-id-description",
     "audit-request-returned",
     "bump-node-runtime-22-23-4",
+    "calm-rivers-hide",
     "cell-diagram-css-keyframes",
     "cell-diagram-reveal-flicker",
     "conditional-dangerous-auth-flags",
@@ -49,6 +50,7 @@
     "discoverable-backend-features",
     "gate-cost-insights-tab",
     "notification-channel-email-content-type",
+    "notification-channel-email-from-name",
     "notification-channel-overview",
     "notification-channel-secret-references",
     "openchoreo-scoped-fetch-api",
@@ -62,6 +64,7 @@
     "publish-openchoreo-themes",
     "release-lines-ui",
     "settings-sub-pages-full-width",
+    "silent-spiders-stay",
     "surface-token-acquisition-failures",
     "unpin-node-22-22"
   ]
