@@ -1,5 +1,14 @@
 # @openchoreo/openchoreo-client-node
 
+## 2.0.0-next.3
+
+### Minor Changes
+
+- 1f84d36: Email notification channels can set a sender display name. The create form adds an optional
+  "Sender Name" field (`emailConfig.fromName`), the scaffolder action forwards it to the OpenChoreo
+  API, and the channel overview card shows the sender as `Name <address>`. The client is regenerated
+  for the new `NotificationEmailConfig.fromName` field.
+
 ## 2.0.0-next.2
 
 ### Minor Changes

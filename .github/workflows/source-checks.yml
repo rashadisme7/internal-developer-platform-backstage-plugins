@@ -1,0 +1,127 @@
+name: Source Checks
+
+on:
+  push:
+    branches:
+      - 'release-v*'
+  pull_request:
+    branches:
+      - 'release-v*'
+
+jobs:
+  source-checks:
+    name: source-checks
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Determine branch and channel
+        run: |
+          # On a PR, the target branch matters, not the topic branch.
+          if [ -n "${GITHUB_BASE_REF:-}" ]; then
+            BRANCH="$GITHUB_BASE_REF"
+          else
+            BRANCH="${GITHUB_REF#refs/heads/}"
+          fi
+          # Plain GA line (release-v1.3) or a full milestone/rc/alpha line (release-v1.4.0-m.2).
+          if [[ ! "$BRANCH" =~ ^release-v[0-9]+\.[0-9]+(\.[0-9]+-[0-9A-Za-z.-]+)?(-eval)?$ ]]; then
+            echo "::error::branch '$BRANCH' does not match release-vX.Y[-eval] or release-vX.Y.Z-<prerelease>[-eval]"
+            exit 1
+          fi
+          if [[ "$BRANCH" == *-eval ]]; then
+            CHANNEL=eval
+          else
+            CHANNEL=subscription
+          fi
+          echo "BRANCH=$BRANCH" >> "$GITHUB_ENV"
+          echo "CHANNEL=$CHANNEL" >> "$GITHUB_ENV"
+
+      - name: Validate VERSION shape and channel marker
+        run: |
+          if [ ! -f VERSION ]; then
+            echo "::error::VERSION file not found"
+            exit 1
+          fi
+          VERSION=$(tr -d '[:space:]' < VERSION)
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::VERSION '$VERSION' must look like major.minor.patch[-<suffix>]"
+            exit 1
+          fi
+          if [ "$CHANNEL" = "eval" ]; then
+            if [[ "$VERSION" != *-eval* ]]; then
+              echo "::error::VERSION '$VERSION' must contain -eval on an eval branch"
+              exit 1
+            fi
+          else
+            if [[ "$VERSION" == *-eval* ]]; then
+              echo "::error::VERSION '$VERSION' must not contain -eval on a subscription branch"
+              exit 1
+            fi
+          fi
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Already-tagged check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${{ github.repository }}/git/refs/tags/v${VERSION}" >/dev/null 2>&1; then
+            echo "::error::v${VERSION} already exists as a git tag on this repo -- merge the pending version-bump PR first"
+            exit 1
+          fi
+          echo "v${VERSION} is not yet tagged -- ok"
+
+      # Subscription only. vars.UPSTREAM_REPO is set once per docs/init.md.
+      - name: Freshness check
+        if: env.CHANNEL == 'subscription'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPSTREAM_REPO: ${{ vars.UPSTREAM_REPO }}
+        run: |
+          set -o pipefail
+          if [ -z "$UPSTREAM_REPO" ]; then
+            echo "::error::vars.UPSTREAM_REPO is not set -- see docs/init.md"
+            exit 1
+          fi
+          LINE="${BRANCH#release-v}"
+          UPSTREAM_BRANCH="release-v${LINE}"
+
+          if [[ "$LINE" =~ ^[0-9]+\.[0-9]+\.[0-9]+- ]]; then
+            TAG_PATTERN="^v${LINE}\$"
+          else
+            TAG_PATTERN="^v${LINE//./\\.}\.[0-9]+\$"
+          fi
+
+          # target_commitish isn't reliable here; match by tag name instead (same as resolve_tag).
+          LATEST_TAG=$(gh api "repos/${UPSTREAM_REPO}/releases" --paginate --slurp | jq -r \
+            '[.[][] | select(.draft==false) | .tag_name] | .[]' \
+            | { grep -E "$TAG_PATTERN" || true; } | sort -V | tail -n1)
+
+          # Some repos (e.g. backstage-plugins) publish tags but no GitHub Releases at all.
+          if [ -z "$LATEST_TAG" ]; then
+            LATEST_TAG=$(gh api --paginate "repos/${UPSTREAM_REPO}/tags" --jq '.[].name' \
+              | { grep -E "$TAG_PATTERN" || true; } | sort -V | tail -n1)
+          fi
+
+          if [ -z "$LATEST_TAG" ]; then
+            echo "No published release found on ${UPSTREAM_REPO} for ${UPSTREAM_BRANCH} -- nothing to be fresh against yet, skipping"
+            exit 0
+          fi
+
+          TAG_REF=$(gh api "repos/${UPSTREAM_REPO}/git/refs/tags/${LATEST_TAG}")
+          TAG_SHA=$(echo "$TAG_REF" | jq -r '.object.sha')
+          TAG_TYPE=$(echo "$TAG_REF" | jq -r '.object.type')
+          if [ "$TAG_TYPE" = "tag" ]; then
+            TAG_SHA=$(gh api "repos/${UPSTREAM_REPO}/git/tags/${TAG_SHA}" --jq '.object.sha')
+          fi
+
+          if git merge-base --is-ancestor "$TAG_SHA" HEAD; then
+            echo "Fresh: contains ${LATEST_TAG} (${TAG_SHA}) from ${UPSTREAM_REPO}@${UPSTREAM_BRANCH}"
+          else
+            echo "::error::Stale -- missing ${LATEST_TAG} (${TAG_SHA}) from ${UPSTREAM_REPO}@${UPSTREAM_BRANCH}. Run Sync Upstream or merge it in manually."
+            exit 1
+          fi
