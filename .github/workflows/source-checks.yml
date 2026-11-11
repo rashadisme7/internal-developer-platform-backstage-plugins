@@ -82,6 +82,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           UPSTREAM_REPO: ${{ vars.UPSTREAM_REPO }}
         run: |
+          set -o pipefail
           if [ -z "$UPSTREAM_REPO" ]; then
             echo "::error::vars.UPSTREAM_REPO is not set -- see docs/init.md"
             exit 1
@@ -89,11 +90,22 @@ jobs:
           LINE="${BRANCH#release-v}"
           UPSTREAM_BRANCH="release-v${LINE}"
 
-          # --slurp wraps every page into one array so the sort_by|last below runs once
-          # over everything, not once per page (which would break past 30 releases).
-          # gh rejects --slurp combined with --jq, so the filtering runs as a separate pipe.
+          if [[ "$LINE" =~ ^[0-9]+\.[0-9]+\.[0-9]+- ]]; then
+            TAG_PATTERN="^v${LINE}\$"
+          else
+            TAG_PATTERN="^v${LINE//./\\.}\.[0-9]+\$"
+          fi
+
+          # target_commitish isn't reliable here; match by tag name instead (same as resolve_tag).
           LATEST_TAG=$(gh api "repos/${UPSTREAM_REPO}/releases" --paginate --slurp | jq -r \
-            "[.[][] | select(.draft==false and .target_commitish==\"${UPSTREAM_BRANCH}\")] | sort_by(.created_at) | last | .tag_name // empty")
+            '[.[][] | select(.draft==false) | .tag_name] | .[]' \
+            | { grep -E "$TAG_PATTERN" || true; } | sort -V | tail -n1)
+
+          # Some repos (e.g. backstage-plugins) publish tags but no GitHub Releases at all.
+          if [ -z "$LATEST_TAG" ]; then
+            LATEST_TAG=$(gh api --paginate "repos/${UPSTREAM_REPO}/tags" --jq '.[].name' \
+              | { grep -E "$TAG_PATTERN" || true; } | sort -V | tail -n1)
+          fi
 
           if [ -z "$LATEST_TAG" ]; then
             echo "No published release found on ${UPSTREAM_REPO} for ${UPSTREAM_BRANCH} -- nothing to be fresh against yet, skipping"
